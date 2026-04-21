@@ -48,7 +48,7 @@ const CONFIG = {
     // --- Option A: Static CSV file ---
     // Place your CSV in the /data/ folder, or use a full https:// URL.
     csv: {
-      url: '/noise_applications.csv', // test CSV in the folder
+      url: 'https://github.com/Noise-unit/Mockup_page/blob/main/Noise_Map/noise_applications.csv', // test CSV in the folder
     },
 
     // --- Option B: Google Sheets ---
