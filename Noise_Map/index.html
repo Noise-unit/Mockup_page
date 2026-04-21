@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!--
+  ============================================================================
+              ~~~~PUBLIC NOISE VARIATION APPLICATIONS MAP~~~~
+    
+    Template code provided by the NOISE UNIT - EMA using existing code libraries
+    Stackoverflow and some AI generated code which has been reviewed adjusted
+    and commented accordingly
+    
+    Code is heavily commented for ease of manipulation. All functional sections
+    are seperated into individual javascript files to make it easier to work with
+
+    The CSS styling was selected only based on personal preferences so this can 
+    be changed if needed from the style.css file. There is only one style file 
+    for the project so everthing should be easy to adjust
+
+    Coding was done using Visual Studio Code Windows desktop version. 
+    The 'Live Server' Extension was used for testing.
+  ============================================================================
+  Special Note: 
+    TO EMBED THIS IN ANOTHER WEBPAGE:
+    ──────────────────────────────────────────────────────────────────────────
+    Place an <iframe> in the host page that points to this file:
+
+      <iframe
+        src="/path/to/noise-map/index.html"
+        style="width:100%; height:650px; border:none; border-radius:12px;"
+        title="Noise Variation Map"
+      ></iframe>
+
+    Or, 
+    
+    if embedding the code directly into the CMS/framework, copy the
+    contents of <body> into the page and ensure all the CSS / JS files
+    listed below are also served.
+
+  ============================================================================
+  -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noise Variation Applications — Trinidad & Tobago</title>
+  <meta name="description" content="Interactive map of noise variation applications across Trinidad and Tobago." />
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       GOOGLE FONTS
+  ────────────────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       LEAFLET  v1.9.4  —  Interactive map library which forms the basis for the displayed map
+       Docs: https://leafletjs.com
+  ────────────────────────────────────────────────────────────────────────── -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       PROJ4  v2.9.0  —  Coordinate system transformation library
+       Used by utm-converter.js to convert UTM to WGS84 (lat/lon) 
+       as leaftlet only recognises lat/lon coordinates
+       Docs: https://proj4js.org
+  ────────────────────────────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"
+          crossorigin="anonymous"></script>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       PAPAPARSE  v5.4.1  —  The CSV parser
+       Used by data-loader.js to parse CSV data onto the map
+       Docs: https://www.papaparse.com
+  ────────────────────────────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"
+          crossorigin="anonymous"></script>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       LEAFLET-PIP  —  Point-in-Polygon for Leaflet GeoJSON layers
+       Used by map.js to determine which municipality each event falls inside.
+       This powers the municipality filter in filters.js.
+       GitHub: https://github.com/mapbox/leaflet-pip
+  ────────────────────────────────────────────────────────────────────────── -->
+  <script src="https://unpkg.com/leaflet-pip@1.1.0/leaflet-pip.js"></script>
+
+  <!-- The main stylesheet in the folder-->
+  <link rel="stylesheet" href="css/style.css" />
+
+</head>
+<body>
+
+  <!--
+  ============================================================================
+    MAIN CONTAINER
+  ============================================================================
+  -->
+  <div id="app-container">
+
+
+    <!-- ==================================================================
+         SIDEBAR
+         The left-hand panel containing all the controls.
+    =================================================================== -->
+    <aside id="sidebar" role="complementary" aria-label="Map controls">
+
+      <div id="sidebar-content">
+
+        <!-- ── HEADER ─────────────────────────────────────── -->
+        <header class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-icon" aria-hidden="true">🔊</div> <!--Strictly for visual-->
+            <div>
+              <div class="sidebar-title">Noise Variation Applications</div>
+            </div>
+          </div>
+        </header>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- ── SEARCH ────────────────────────────────────────────────── -->
+        <!--
+          Search for any location in Trinidad & Tobago.
+          Based on OpenStreetMap Nominatim geocoding.
+          Results are restricted to T&T (countryCode in config.js).
+        -->
+        <section class="search-wrap" aria-label="Location search">
+
+          <div class="section-label">Search Location</div>
+
+          <div class="search-input-row">
+            <input
+              type="text"
+              id="search-input"
+              autocomplete="off"
+              aria-label="Search for a location"
+            />
+            <!-- The placeholder is set by search.js from CONFIG.search.placeholder -->
+            <button id="search-button" aria-label="Search">🔍</button> <!--Strictly for visual-->
+          </div>
+
+          <!-- Status messages (Searching… / Found: … / Error) appear here -->
+          <div id="search-status" class="search-status" role="status" aria-live="polite"></div>
+
+        </section>
+
+        <div class="sidebar-divider"></div>
+
+
+        <!-- ── LAYER CONTROLS ────────────────────────────────────────── -->
+        <!--
+          Toggle GeoJSON overlay layers on/off and control their opacity.
+          Non-interactive layers (interactive: false).
+          The GeoJSON URL is set in config.js > layers 
+          (currently pulled from a GitHub Repo but the GeoJson file is located in the folder if another location is preferred).
+        -->
+        <section class="layers-wrap" aria-label="Layer controls">
+
+          <div class="section-label">Map Layers</div>
+
+          <!-- Municipality Layer -->
+          <div class="layer-item">
+            <label class="layer-toggle-row">
+          <!--~~~~~~~~~~~~~~ This can be uncommented if you want to allow toggle on/off for the Municipaliy layer    
+ 
+             <div class="toggle-switch">
+                <input type="checkbox" id="toggle-municipality" checked
+                       aria-label="Toggle municipality layer" />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </div> 
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->                                                
+              <span class="layer-name">Municipalities</span>
+            </label>
+
+            <!-- Opacity slider for the municipality layer -->
+            <div class="layer-opacity-row">
+              <span class="layer-opacity-label">Opacity</span>
+              <input
+                type="range"
+                id="opacity-municipality"
+                min="0" max="1" step="0.05"
+                value="0.4"
+                aria-label="Municipality layer opacity"
+              />
+              <span class="opacity-value" id="opacity-municipality-val">40%</span>
+            </div>
+          </div><!-- /municipality -->
+
+        </section>
+
+        <div class="sidebar-divider"></div>
+
+
+        <!-- ── FILTERS ───────────────────────────────────────────────── -->
+        <!--
+          Filters the displayed event points by:
+            • Date range  — uses CONFIG.columns.dateColumn
+            • Municipality — uses CONFIG.municipalityFilter.nameAttribute
+                             from the municipality GeoJSON
+
+          IMPORTANT NOTES FOR CUSTOMIZATION:
+          ────────────────────────────────────
+          • To change the date column, update CONFIG.columns.dateColumn in config.js.
+          • To change the municipality attribute, update
+            CONFIG.municipalityFilter.nameAttribute in config.js.
+          • The municipality dropdown is populated automatically from the
+            loaded GeoJSON using the '.nameAttribute'. If no GeoJSON is loaded, the dropdown stays empty.
+          • Date parsing handles many formats and multiple dates per cell as this may apply for multiple day events .
+            (filters.js has the full list of supported formats).
+        -->
+        <section class="filters-wrap" aria-label="Data filters">
+
+          <div class="section-label">Filter Events</div>
+
+          <!-- Date range filter -->
+          <div class="filter-field">
+            <label class="filter-label">Event Date Range</label>
+            <div class="filter-date-row">
+              <input
+                type="date"
+                id="filter-date-start"
+                class="filter-input"
+                aria-label="Filter from date"
+                title="From date"
+              />
+              <input
+                type="date"
+                id="filter-date-end"
+                class="filter-input"
+                aria-label="Filter to date"
+                title="To date"
+              />
+            </div>
+          </div>
+
+          <!-- Municipality filter dropdown -->
+          <!-- Options are injected by filters.js > populateMunicipalityFilter() -->
+          <div class="filter-field">
+            <label class="filter-label" for="filter-municipality">Municipality</label>
+            <select id="filter-municipality" class="filter-select">
+              <option value="">All Municipalities</option>
+              <!-- Options added dynamically from GeoJSON -->
+            </select>
+          </div>
+
+          <!-- Apply / Reset buttons -->
+          <div class="filter-actions">
+            <button id="filter-apply" class="btn btn--primary">Apply</button>
+            <button id="filter-reset" class="btn btn--secondary">Reset</button>
+          </div>
+
+          <!-- Result count (e.g. "Showing 12 of 47 events") -->
+          <div id="filter-count" aria-live="polite"></div>
+
+        </section>
+
+      </div><!-- /#sidebar-content -->
+
+    </aside><!-- /#sidebar -->
+
+
+    <!-- ==================================================================
+         MAP AREA
+         The Leaflet map appears inside #map.
+         The 'stacked line / hamburger' button and backdrop are absolutely positioned
+         over the map and only become active for mobile screen aspect ratios
+         but I have not tested this functionality to determine if it works properly or not.
+    =================================================================== -->
+    <main id="map-area" role="main">
+
+      <!-- Mobile hamburger (slides the sidebar open) -->
+      <button id="sidebar-hamburger" aria-label="Open map controls" aria-expanded="false">
+        ☰
+      </button>
+
+      <!-- Backdrop overlay (closes sidebar when tapped on mobile) -->
+      <div id="map-overlay-backdrop" aria-hidden="true"></div>
+
+      <!-- Leaflet attaches the map to this element -->
+      <div id="map" aria-label="Interactive noise variation map"></div>
+
+      <!-- ── LOADING OVERLAY ───────────────────────────────────────── -->
+      <!-- Visible during initial data fetch; hidden once ready         -->
+      <div id="loading-overlay" role="status" aria-label="Loading">
+        <div class="loading-spinner"></div>
+        <div id="loading-message">Initialising map…</div>
+      </div>
+
+      <!-- ── ERROR BANNER ─────────────────────────────────────────── -->
+      <!-- Shown if a critical step fails (bad URL, network error, etc.) -->
+      <div id="error-banner" role="alert">
+        <span id="error-text"></span>
+        <button id="error-dismiss">Dismiss</button>
+      </div>
+
+    </main><!-- /#map-area -->
+
+
+  </div><!-- /#app-container -->
+
+
+  <!-- ======================================================================
+       JAVASCRIPT — loaded in dependency order
+       ======================================================================
+       config.js       — *** ALL PRIMARY EDITABLE SETTINGS (START HERE FIRST) ***
+       data-loader.js  — Loads data from CSV / Google Sheets / MS Lists (** Edit only if additional source needed **)
+       utm-converter.js— Converts UTM → WGS84 lat/lon
+       popup.js        — Builds popup HTML                              (** template editable inside **)
+       filters.js      — Date and municipality filter logic
+       search.js       — Nominatim location search 
+       map.js          — Core map: init, layers, markers, legend
+       main.js         — App entry point; wires everything together
+  ====================================================================== -->
+  <script src="js/config.js"></script>
+  <script src="js/data-loader.js"></script>
+  <script src="js/utm-converter.js"></script>
+  <script src="js/popup.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

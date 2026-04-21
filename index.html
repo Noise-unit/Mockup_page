@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noise Variations — Environmental Management Authority</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal:       #007a6e;
+      --teal-dark:  #005f55;
+      --teal-light: #e6f4f2;
+      --navy:       #003049;
+      --gold:       #c89a2e;
+      --text:       #222;
+      --text-sm:    #555;
+      --border:     #dde3e8;
+      --bg:         #f5f7f8;
+      --white:      #fff;
+      --amber:      #b45309;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── UTILITY BAR ── */
+    .utility-bar {
+      background: var(--teal-dark);
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 34px;
+    }
+    .utility-bar span { font-weight: 600; letter-spacing: 0.04em; }
+    .utility-links { display: flex; gap: 20px; }
+    .utility-links a { color: rgba(255,255,255,0.8); font-size: 12px; }
+    .utility-links a:hover { color: #fff; text-decoration: none; }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--white);
+      border-bottom: 3px solid var(--teal);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+      gap: 24px;
+    }
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+    .logo-block img {
+      /* Original: 138w × 242h → scale to fit header */
+      height: 64px;
+      width: auto;
+      object-fit: contain;
+    }
+    .logo-name {
+      font-family: 'Merriweather', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--teal-dark);
+      line-height: 1.25;
+      max-width: 220px;
+    }
+
+    nav { display: flex; gap: 2px; align-items: center; }
+    nav a {
+      padding: 8px 16px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-sm);
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    nav a:hover { background: var(--teal-light); color: var(--teal-dark); text-decoration: none; }
+    nav a.active {
+      background: var(--teal);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ── ALERT BANNER ── */
+    .alert-banner {
+      background: #fffbeb;
+      border-bottom: 1px solid #fde68a;
+      border-left: 4px solid #f59e0b;
+      padding: 10px 32px;
+      font-size: 12.5px;
+      color: #78350f;
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+    }
+    .alert-banner svg { flex-shrink: 0; margin-top: 1px; }
+    .alert-banner strong { font-weight: 700; }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      background: linear-gradient(135deg, #004a40 0%, var(--teal) 55%, #009688 100%);
+      color: #fff;
+      padding: 44px 32px 40px;
+    }
+    .hero-inner { max-width: 1200px; margin: 0 auto; }
+
+    .breadcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: rgba(255,255,255,0.6);
+      margin-bottom: 16px;
+    }
+    .breadcrumb a { color: rgba(255,255,255,0.6); }
+    .breadcrumb a:hover { color: #fff; text-decoration: none; }
+    .breadcrumb span { font-size: 11px; }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    h1.page-title {
+      font-family: 'Merriweather', serif;
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      max-width: 780px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 0;
+      flex-wrap: wrap;
+      background: rgba(0,0,0,0.15);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 680px;
+    }
+    .hero-stat {
+      flex: 1;
+      min-width: 120px;
+      padding: 14px 18px;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat .num {
+      font-family: 'Merriweather', serif;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
+      display: block;
+    }
+    .hero-stat .lbl {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── LAYOUT ── */
+    .page-body {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 32px 60px;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 32px;
+      align-items: start;
+    }
+    .main-col { min-width: 0; }
+    .side-col { position: sticky; top: 100px; }
+
+    /* ── SECTION TITLES ── */
+    .sec-title {
+      font-family: 'Merriweather', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--teal);
+      margin-bottom: 20px;
+    }
+
+    /* ── PROCESS STEPS ── */
+    .process-steps {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .steps-title {
+      font-family: 'Merriweather', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 20px;
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: calc(12.5% + 8px);
+      right: calc(12.5% + 8px);
+      height: 2px;
+      background: #d1d5db;
+      z-index: 0;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .step-num {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: #d1d5db;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+    .step.done .step-num { background: var(--teal); }
+    .step.current .step-num { background: var(--navy); box-shadow: 0 0 0 4px rgba(0,122,110,0.2); }
+    .step-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .step-sub { font-size: 11.5px; color: var(--text-sm); line-height: 1.5; }
+
+    /* ── NOISE NOTICES TABLE ── */
+    .notices-section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .notices-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .notices-header h2 {
+      font-family: 'Merriweather', serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .notices-header span {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .notices-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .notices-table thead tr {
+      background: var(--teal-light);
+    }
+    .notices-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--teal-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .notices-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #eef0f2;
+      vertical-align: top;
+      color: var(--text);
+    }
+    .notices-table tr:last-child td { border-bottom: none; }
+    .notices-table tr:hover td { background: #f9fafb; }
+    .notices-table .pub-date { color: var(--text-sm); font-size: 12px; }
+    .notices-table .event-date { font-weight: 600; color: var(--navy); }
+    .notices-table .notice-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12px; font-weight: 600;
+      color: var(--teal); white-space: nowrap;
+    }
+    .notices-table .notice-link:hover { color: var(--teal-dark); }
+    .duration-badge {
+      display: inline-block;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    /* ── MAP SECTION ── */
+    .map-section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .map-section-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .map-section-header svg { color: var(--gold); }
+    .map-section-header h2 {
+      font-family: 'Merriweather', serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .map-section-header p { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 1px; }
+
+    /* ── SIDEBAR ── */
+    .side-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .side-card-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .side-card-body { padding: 16px; }
+
+    /* Calendar Deadline Calculator */
+    .cal-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .cal-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Open Sans', sans-serif;
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+    .cal-input:focus { outline: none; border-color: var(--teal); }
+    .cal-hint {
+      font-size: 11.5px;
+      color: var(--text-sm);
+      margin-top: 6px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .btn-calc {
+      width: 100%;
+      padding: 9px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Open Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-calc:hover { background: var(--teal-dark); }
+    .deadlines-result {
+      display: none;
+      margin-top: 14px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .deadlines-result.visible { display: block; }
+    .deadline-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid #eef0f2;
+    }
+    .deadline-row:last-child { border-bottom: none; }
+    .deadline-row .dlabel { font-size: 12px; color: var(--text-sm); line-height: 1.4; }
+    .deadline-row .ddate {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+    .deadline-row.urgent .ddate { color: #b91c1c; }
+
+    /* Legislation Links */
+    .leg-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px solid #eef0f2;
+      font-size: 13px;
+      color: var(--teal);
+      cursor: pointer;
+      transition: color 0.12s;
+    }
+    .leg-link:last-child { border-bottom: none; }
+    .leg-link:hover { color: var(--teal-dark); }
+    .leg-link svg { flex-shrink: 0; color: var(--text-sm); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--white);
+      border-top: 3px solid var(--teal);
+      margin-top: 0;
+    }
+    .footer-img {
+      width: 100%;
+      max-height: 340px;
+      object-fit: cover;
+      display: block;
+    }
+    .footer-bottom {
+      background: var(--teal-dark);
+      color: rgba(255,255,255,0.65);
+      font-size: 12px;
+      text-align: center;
+      padding: 12px 32px;
+    }
+    .footer-bottom a { color: rgba(255,255,255,0.65); }
+    .footer-bottom strong { color: #fff; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .page-body { grid-template-columns: 1fr; }
+      .side-col { position: static; }
+      .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .steps-grid::before { display: none; }
+      .hero-stats { max-width: 100%; }
+      nav { display: none; }
+      .header-inner { padding: 0 16px; }
+      .page-hero, .alert-banner, .page-body { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Utility Bar -->
+<div class="utility-bar">
+  <span>Environmental Management Authority</span>
+  <div class="utility-links">
+    <a href="#">Our Environment</a>
+    <a href="#">Portal Login</a>
+    <a href="#">Contact EMA</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <a class="logo-block" href="#">
+      <img src="ema_logo.png" alt="EMA Logo" />
+      <div class="logo-name">Environmental Management Authority</div>
+    </a>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About EMA</a>
+      <a href="#" class="active">Noise</a>
+      <a href="#">Legislation</a>
+      <a href="#">Publications</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Alert Banner -->
+<div class="alert-banner">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  <span><strong>Notice:</strong> Application deadlines <strong>MUST</strong> be met in order for an Application to be accepted. Refer to the Noise Pollution Control Rules, 2001 (as amended) for full requirements.</span>
+</div>
+
+<!-- Page Hero -->
+<section class="page-hero">
+  <div class="hero-inner">
+    <div class="breadcrumb">
+      <a href="#">Home</a>
+      <span>›</span>
+      <a href="#">Our Environment</a>
+      <span>›</span>
+      <span>Noise</span>
+      <span>›</span>
+      <span>Noise Variations</span>
+    </div>
+    <div class="hero-tag">Noise</div>
+    <h1 class="page-title">Noise Variations</h1>
+    <p class="page-subtitle">The EMA is now accepting digital submissions of Variation Applications via its dedicated email: <strong>noise@ema.co.tt</strong>. Applicants can download the fillable PDF application form included at the link below under Resources, complete and submit with all required attachments via email. Please note, if an application does not include all the required accompanying documents and/or is not submitted by 4:30 p.m. on the deadline date it will not be accepted.</p>
+    <div class="hero-stats">
+    </div>
+  </div>
+</section>
+
+<!-- Page Body -->
+<div class="page-body">
+
+  <!-- ── MAIN COLUMN ── -->
+  <div class="main-col">
+
+    <!-- Application Process -->
+    <div class="process-steps">
+      <div class="steps-title">Application Process</div>
+      <div class="steps-grid">
+        <div class="step done">
+          <div class="step-num">1</div>
+          <div class="step-label">Publish Notices</div>
+          <div class="step-sub">At least 35 days before the event date in any one daily newspaper for 2 consecutive days.</div>
+        </div>
+        <div class="step done">
+          <div class="step-num">2</div>
+          <div class="step-label">Fill out the Application</div>
+          <div class="step-sub">The Applicant is the owner or Manager of the property.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-label">Pay the Fee</div>
+          <div class="step-sub">Single event — $250<br>Multiple events — $1,000</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-label">Submit the Application</div>
+          <div class="step-sub">Applications must be submitted at least 28 days before the event date.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Noise Notices -->
+    <div class="notices-section">
+      <div class="notices-header">
+        <h2>Noise Notices</h2>
+        <span>Showing notices for comment</span>
+      </div>
+      <table class="notices-table">
+        <thead>
+          <tr>
+            <th>Publication Date</th>
+            <th>Event Date</th>
+            <th>Activity Address</th>
+            <th>Description</th>
+            <th>Duration</th>
+            <th>Notice</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="pub-date">17 Apr 2026</td>
+            <td class="event-date">27 Jun 2026</td>
+            <td>National Cricket Center, Couva</td>
+            <td>Kuchoor</td>
+            <td><span class="duration-badge">9pm – 2am</span></td>
+            <td><a href="#" class="notice-link">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Notice
+            </a></td>
+          </tr>
+          <tr>
+            <td class="pub-date">14 Apr 2026</td>
+            <td class="event-date">30 May 2026</td>
+            <td>Drew Manor, Santa Cruz</td>
+            <td>Cocktail Inclusive Garden Party</td>
+            <td><span class="duration-badge">7 Hours</span></td>
+            <td><a href="#" class="notice-link">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Notice
+            </a></td>
+          </tr>
+          <tr>
+            <td class="pub-date">13 Apr 2026</td>
+            <td class="event-date">3 May 2026</td>
+            <td>Lopinot Historical Complex</td>
+            <td>St. Mary's Parish Event</td>
+            <td><span class="duration-badge">9am – 5pm</span></td>
+            <td><a href="#" class="notice-link">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Notice
+            </a></td>
+          </tr>
+          <tr>
+            <td class="pub-date">13 Apr 2026</td>
+            <td class="event-date">14 Jun 2026</td>
+            <td>Five Islands, Chaguaramas</td>
+            <td>Dream Street Festival</td>
+            <td><span class="duration-badge">3am – 10am</span></td>
+            <td><a href="#" class="notice-link">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Notice
+            </a></td>
+          </tr>
+          <tr>
+            <td class="pub-date">13 Apr 2026</td>
+            <td class="event-date">16 May 2026</td>
+            <td>Republic Bank Staff Sports Club, 8th Ave Ext., Barataria, San Juan</td>
+            <td>Staff Fun and Family Day</td>
+            <td><span class="duration-badge">10am – 6:30pm</span></td>
+            <td><a href="#" class="notice-link">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Notice
+            </a></td>
+          </tr>
+          <tr>
+            <td class="pub-date">13 Apr 2026</td>
+            <td class="event-date">4 Jul 2026</td>
+            <td>Deltech Compound, Argyle, Tobago</td>
+            <td>SunUp Brunch Inclusive Event</td>
+            <td><span class="duration-badge">4pm – 12am</span></td>
+            <td><a href="#" class="notice-link">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Notice
+            </a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Noise Map -->
+    <div class="map-section">
+      <div class="map-section-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        <div>
+          <h2>Noise Variation Map</h2>
+          <p>Interactive map of active noise variation applications across Trinidad &amp; Tobago</p>
+        </div>
+      </div>
+      <iframe
+        src="Noise_Map/index.html"
+        style="width:100%; height:650px; border:none;"
+        title="Noise Variation Map"
+      ></iframe>
+    </div>
+
+  </div><!-- /main-col -->
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="side-col">
+
+    <!-- Deadline Calculator -->
+    <div class="side-card">
+      <div class="side-card-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Deadline Calculator
+      </div>
+      <div class="side-card-body">
+        <div class="cal-label">Event Date</div>
+        <input type="date" class="cal-input" id="eventDate" />
+        <p class="cal-hint">Select your intended event date to automatically calculate your publication and application submission deadlines.</p>
+        <button class="btn-calc" onclick="calcDeadlines()">Calculate Deadlines</button>
+
+        <div class="deadlines-result" id="deadlinesResult">
+          <div class="deadline-row" id="pubRow">
+            <span class="dlabel">📰 Newspaper Publication<br><small style="color:#999">Publish notices for 2 consecutive days<br>(35 days before event)</small></span>
+            <span class="ddate" id="pubDate">—</span>
+          </div>
+          <div class="deadline-row" id="appRow">
+            <span class="dlabel">📋 Application Submission<br><small style="color:#999">Submit completed application<br>(28 days before event)</small></span>
+            <span class="ddate" id="appDate">—</span>
+          </div>
+          <div class="deadline-row" style="background:#f9fafb; border-radius:6px; padding:8px 10px; margin-top:8px; border:none;">
+            <span class="dlabel" style="color:#555; font-style:italic; font-size:11px;">⏰ All submissions must be received by <strong>4:30 p.m.</strong> on the deadline date.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legislation & Guidelines -->
+    <div class="side-card">
+      <div class="side-card-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Legislation &amp; Guidelines
+      </div>
+      <div class="side-card-body">
+        <a href="#" class="leg-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Environmental Management Act Ch. 35:05
+        </a>
+        <a href="#" class="leg-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Noise Pollution Control Rules, 2001 (as amended)
+        </a>
+        <a href="#" class="leg-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Fee Schedule
+        </a>
+        <a href="#" class="leg-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8px"/><polyline points="14 2 14 8 20 8"/></svg>
+          Application Guide
+        </a>
+        <a href="#" class="leg-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Application Form
+        </a>
+        <a href="#" class="leg-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Code of Practice
+        </a>
+        <a href="#" class="leg-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          F.A.Q
+        </a>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- /page-body -->
+
+<!-- Footer -->
+<footer>
+  <img src="footer.png" alt="Environmental Management Authority Footer" class="footer-img"
+    style="max-height:220px; object-fit:contain; display:block; margin:0 auto; padding:24px 0;" />
+  <div class="footer-bottom">
+    Environmental Management Authority &copy; 2026. All Rights Reserved. &nbsp;|&nbsp;
+    Designed by <strong>EMA's IT Department</strong> &nbsp;|&nbsp;
+    Email: <a href="mailto:emawebadmin@ema.co.tt">emawebadmin@ema.co.tt</a>
+  </div>
+</footer>
+
+<script>
+  function calcDeadlines() {
+    const input = document.getElementById('eventDate');
+    const result = document.getElementById('deadlinesResult');
+    const pubDate = document.getElementById('pubDate');
+    const appDate = document.getElementById('appDate');
+    const pubRow  = document.getElementById('pubRow');
+    const appRow  = document.getElementById('appRow');
+
+    if (!input.value) {
+      alert('Please select an event date first.');
+      return;
+    }
+
+    const event = new Date(input.value + 'T12:00:00');
+    const today = new Date();
+
+    const pub = new Date(event);
+    pub.setDate(pub.getDate() - 35);
+
+    const app = new Date(event);
+    app.setDate(app.getDate() - 28);
+
+    const fmt = d => d.toLocaleDateString('en-TT', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    });
+
+    pubDate.textContent = fmt(pub);
+    appDate.textContent = fmt(app);
+
+    // Flag urgency if deadline has passed or is within 3 days
+    const threeDays = 3 * 24 * 60 * 60 * 1000;
+    pubRow.className = 'deadline-row' + (pub - today < threeDays ? ' urgent' : '');
+    appRow.className = 'deadline-row' + (app - today < threeDays ? ' urgent' : '');
+
+    result.classList.add('visible');
+  }
+
+  // Allow pressing Enter on date input
+  document.getElementById('eventDate').addEventListener('keydown', e => {
+    if (e.key === 'Enter') calcDeadlines();
+  });
+</script>
+
+</body>
+</html>
